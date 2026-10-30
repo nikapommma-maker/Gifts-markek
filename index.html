@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10091d"><title>GIFTS MARKET</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#10091d;--panel:#1b1230;--panel2:#24183b;--gold:#e8c477;--gold2:#a97836;--muted:#b7a9c9;--line:#49345f}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#392354 0,#10091d 58%);color:#fff;font:15px system-ui,-apple-system,Segoe UI,sans-serif;padding:env(safe-area-inset-top) 16px calc(88px + env(safe-area-inset-bottom));min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;padding:15px 2px 20px}.brand{display:flex;gap:11px;align-items:center}.logo{width:45px;height:45px;border-radius:15px;background:linear-gradient(145deg,#f6dda0,#9b6c2f);display:grid;place-items:center;color:#21142f;font-size:25px;box-shadow:0 0 25px #d7a34a55}.brand b{letter-spacing:1.5px;color:var(--gold)}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.pill{border:1px solid var(--line);background:#211633;border-radius:30px;padding:9px 12px;color:var(--gold);font-size:12px}
+.hero{border:1px solid #735532;border-radius:24px;padding:22px;background:linear-gradient(130deg,#39244f,#21152f 65%,#392548);position:relative;overflow:hidden;box-shadow:0 14px 38px #0005}.hero:after{content:"✦";position:absolute;right:22px;top:8px;font-size:90px;color:#f1d18b22}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:2px}.hero h1{font-size:27px;line-height:1.15;margin:10px 0}.hero p{color:#cbbfda;margin:0 0 18px;max-width:250px}.btn{border:0;border-radius:13px;padding:13px 17px;background:linear-gradient(100deg,#b9823d,#f0d18b);color:#21152b;font-weight:800;font-size:14px;box-shadow:0 5px 18px #d5a44b33}
+.section{display:flex;justify-content:space-between;align-items:center;margin:25px 2px 12px}.section h2{font-size:17px;margin:0}.section span{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{background:linear-gradient(145deg,#24183a,#191127);border:1px solid var(--line);border-radius:18px;padding:15px;min-width:0}.gift{height:94px;display:grid;place-items:center;font-size:48px;background:radial-gradient(circle,#694a7538,transparent 70%);filter:drop-shadow(0 6px 10px #0006)}.card b{display:block;margin:5px 0}.sub{font-size:12px;color:var(--muted)}.price{color:var(--gold);font-weight:800;margin-top:9px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}.stat{background:#1b1230;border:1px solid var(--line);border-radius:16px;padding:14px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:20px;color:var(--gold);margin-top:5px}
+nav{position:fixed;bottom:0;left:0;right:0;padding:10px 10px calc(10px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#130d20ee;backdrop-filter:blur(18px);border-top:1px solid var(--line)}nav button{border:0;background:transparent;color:#aa9bbd;padding:8px 2px;font-size:11px}nav button span{display:block;font-size:20px;margin-bottom:3px}nav button.active{color:var(--gold)}
+.view{display:none;animation:rise .25s ease}.view.active{display:block}@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.toast{position:fixed;left:16px;right:16px;bottom:90px;background:#332448;border:1px solid var(--gold2);padding:13px;border-radius:13px;text-align:center;display:none;z-index:5}
+@media(min-width:600px){body{max-width:560px;margin:auto}.grid{grid-template-columns:repeat(3,1fr)}}
+</style></head>
+<body>
+<header><div class="brand"><div class="logo">💎</div><div><b>GIFTS MARKET</b><small>ТВОЯ КОЛЛЕКЦИЯ ВПЕЧАТЛЕНИЙ</small></div></div><div class="pill">✦ PREMIUM</div></header>
+<main>
+<section id="home" class="view active">
+<div class="hero"><div class="eyebrow">WELCOME TO THE MARKET</div><h1>Мир подарков<br>в твоих руках</h1><p>Собирай коллекцию, выполняй задания и открывай новые возможности.</p><button class="btn" onclick="show('shop')">Открыть магазин ↗</button></div>
+<div class="stats"><div class="stat"><small>🟡 Твои Points</small><strong id="points">—</strong></div><div class="stat"><small>🎁 В коллекции</small><strong id="items">—</strong></div></div>
+<div class="section"><h2>Популярное</h2><span>GIFTS MARKET</span></div><div class="grid" id="featured"></div>
+</section>
+<section id="shop" class="view"><div class="section"><h2>🎁 Каталог</h2><span>Telegram Gifts</span></div><div class="card sub">Оплата реальных товаров Telegram Stars выполняется в чате с ботом. Нажми «Купить» в боте.</div><div class="grid" id="catalog"></div></section>
+<section id="tasks" class="view"><div class="section"><h2>📋 Задания</h2><span>Скоро новые</span></div><div class="card"><b>Ежедневный бонус</b><p class="sub">Забирай 10 внутренних Points раз в 24 часа через бота.</p><button class="btn" onclick="openBot()">Открыть бота</button></div><div class="card"><b>Социальные задания</b><p class="sub">Проверка выполнения будет подключена на сервере.</p></div></section>
+<section id="collection" class="view"><div class="section"><h2>🎒 Коллекция</h2></div><div class="card sub">Твоя коллекция обновляется после подтверждённой оплаты в Telegram.</div><button class="btn" onclick="openBot()">Открыть коллекцию в боте</button></section>
+<section id="profile" class="view"><div class="section"><h2>👤 Профиль</h2></div><div class="card"><b id="name">Пользователь</b><p class="sub" id="tgid">Открой Mini App из Telegram</p></div><div class="stats"><div class="stat"><small>🟡 Points</small><strong id="p2">—</strong></div><div class="stat"><small>🎁 Подарки</small><strong id="i2">—</strong></div></div><div class="card" style="margin-top:12px"><b>Валюты разделены</b><p class="sub">GIFTS MARKET Points — внутренние баллы. Telegram Stars — платёжная валюта Telegram. Они не конвертируются друг в друга.</p></div></section>
+</main><div class="toast" id="toast"></div>
+<nav><button class="active" data-view="home" onclick="show('home',this)"><span>⌂</span>Главная</button><button data-view="shop" onclick="show('shop',this)"><span>◇</span>Магазин</button><button data-view="tasks" onclick="show('tasks',this)"><span>✓</span>Задания</button><button data-view="profile" onclick="show('profile',this)"><span>○</span>Профиль</button></nav>
+<script>
+const tg=window.Telegram?.WebApp; if(tg){tg.ready();tg.expand();tg.setHeaderColor('#10091d');tg.setBackgroundColor('#10091d')}
+const products=[['🧸','Медведь','25 ⭐','bear'],['🌹','Роза','15 ⭐','rose'],['🎂','Торт','35 ⭐','cake'],['💎','Алмаз','50 ⭐','gem']];
+function cards(){return products.map(p=>`<div class="card"><div class="gift">${p[0]}</div><b>${p[1]}</b><div class="price">${p[2]}</div><div class="sub">Покупка через Telegram-бота</div></div>`).join('')}
+document.getElementById('catalog').innerHTML=cards();document.getElementById('featured').innerHTML=cards().split('</div>').slice(0,2).join('</div>')+'</div>';
+function show(id,el){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');else{let b=document.querySelector(`nav button[data-view="${id}"]`);if(b)b.classList.add('active')}}
+function openBot(){if(tg){tg.openTelegramLink('https://t.me/Gifssgg_bot')}else location.href='https://t.me/Gifssgg_bot'}
+const u=tg?.initDataUnsafe?.user;if(u){document.getElementById('name').textContent=[u.first_name,u.last_name].filter(Boolean).join(' ');document.getElementById('tgid').textContent='Telegram ID: '+u.id}
+</script></body></html>
