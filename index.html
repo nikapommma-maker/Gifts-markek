@@ -110,11 +110,14 @@ nav button span{display:block;font-size:19px;margin-bottom:4px}nav button.active
  <button data-view="leaderboard" onclick="show('leaderboard',this)"><span>🏆</span>Лидеры</button>
  <button data-view="tasks" onclick="show('tasks',this)"><span>📋</span>Задания</button>
  <button data-view="balance" onclick="show('balance',this)"><span>💎</span>Баланс</button>
+ <button data-view="profile" onclick="show('profile',this)"><span>👤</span>Профиль</button>
 </nav>
 <script>
 const tg=window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand();}
 const ADMIN_ID=9115662210;
+const el=id=>document.getElementById(id);
+const catalog=el('catalog'),popular=el('popular'),chestPreview=el('chestPreview'),taskTitle=el('taskTitle'),taskReward=el('taskReward'),taskList=el('taskList'),detailArt=el('detailArt'),detailName=el('detailName'),detailType=el('detailType'),detailDescription=el('detailDescription'),username=el('username'),userid=el('userid'),adminUser=el('adminUser'),adminContent=el('adminContent'),adminDenied=el('adminDenied');
 const products=[
 {id:'demo1',emoji:'🧸',name:'Медведь',type:'ordinary',label:'Обычный',description:'Демонстрационный пример карточки Telegram-подарка.'},
 {id:'demo2',emoji:'🌹',name:'Роза',type:'ordinary',label:'Обычный',description:'Демонстрационный пример карточки Telegram-подарка.'},
@@ -146,7 +149,7 @@ function previewChest(name){
 }
 function demoTopup(amount){demoPoints+=amount;updatePoints();toast('Добавлено '+amount+' демонстрационных Points. Реальных платежей нет.');}
 function updatePoints(){
- ['points','homePoints','balancePoints','profilePoints'].forEach(id=>document.getElementById(id).textContent=demoPoints);
+ ['points','homePoints','balancePoints','profilePoints'].forEach(id=>{const node=el(id);if(node)node.textContent=demoPoints;});
 }
 function addDemoTask(){
  const title=taskTitle.value.trim(),reward=Number(taskReward.value);
@@ -155,15 +158,38 @@ function addDemoTask(){
 }
 function renderTasks(){taskList.innerHTML=demoTasks.length?demoTasks.map(t=>'• '+escapeHtml(t.title)+' — '+t.reward+' Points').join('<br>'):'Заданий пока нет.';}
 function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function authenticateTelegram(){
+ if(!tg?.initData){toast('Открой приложение через Telegram');return;}
+ try{
+  const response=await fetch('/api/auth',{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({initData:tg.initData})
+  });
+  const data=await response.json();
+  if(!response.ok||!data.ok){toast('Не удалось подтвердить Telegram');return;}
+  const user=data.user;
+  username.textContent=user.first_name||'Пользователь';
+  userid.textContent='Telegram ID: '+user.id;
+  adminUser.textContent=String(user.id);
+  const isAdmin=Number(user.id)===ADMIN_ID;
+  adminContent.style.display=isAdmin?'block':'none';
+  adminDenied.style.display=isAdmin?'none':'block';
+  if(isAdmin&&!document.querySelector('nav button[data-view="admin"]')){
+   const adminButton=document.createElement('button');
+   adminButton.dataset.view='admin';
+   adminButton.innerHTML='<span>🛠️</span>Админ';
+   adminButton.onclick=()=>show('admin',adminButton);
+   document.querySelector('nav').appendChild(adminButton);
+  }
+ }catch(error){
+  toast('Ошибка соединения с сервером');
+ }
+}
+
 function init(){
  catalog.innerHTML='';popular.innerHTML=products.slice(0,2).map(productCard).join('');renderProducts();updatePoints();renderTasks();
- const user=tg?.initDataUnsafe?.user;
- if(user){username.textContent=[user.first_name,user.last_name].filter(Boolean).join(' ')||'Пользователь';userid.textContent='Telegram ID: '+user.id;adminUser.textContent=String(user.id);}
- const isAdmin=Number(user?.id)===ADMIN_ID;
- adminContent.style.display=isAdmin?'block':'none';adminDenied.style.display=isAdmin?'none':'block';
- if(isAdmin){
-  const adminButton=document.createElement('button');adminButton.dataset.view='admin';adminButton.innerHTML='<span>🛠️</span>Админ';adminButton.onclick=()=>show('admin',adminButton);document.querySelector('nav').appendChild(adminButton);
- }
+ authenticateTelegram();
 }
 init();
 </script>
